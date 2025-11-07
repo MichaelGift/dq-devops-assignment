@@ -1,0 +1,55 @@
+name: Devops CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Prepare image tag
+        id: vars
+        run: |
+          SHORT_SHA=${GITHUB_SHA::7}
+          BRANCH=${GITHUB_REF_NAME}
+          if [ "${BRANCH}" = "main" ]; then
+            TAG="dkantares/dq-devops:prod-${SHORT_SHA}"
+          elif [ "${BRANCH}" = "dev" ]; then
+            TAG="dkantares/dq-devops:dev-${SHORT_SHA}"
+          else
+            echo "Unsupported branch ${BRANCH}"
+            exit 1
+          fi
+          echo "short_sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
+          echo "image_tag=${TAG}" >> $GITHUB_OUTPUT
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.vars.outputs.image_tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

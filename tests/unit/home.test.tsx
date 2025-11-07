@@ -1,9 +1,9 @@
-import { vi } from 'vitest';
+import { describe, it, vi, expect } from 'vitest';
 
 // Mock next/image to a simple img so tests run in jsdom
 vi.mock('next/image', () => ({
   __esModule: true,
-  default: (props: any) => {
+  default: (props: { alt: string; src: string }) => {
     // render a plain img element for tests
     // eslint-disable-next-line jsx-a11y/alt-text
     return <img {...props} />;

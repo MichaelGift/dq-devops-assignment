@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 // Mock next/font/google used by RootLayout (Geist and Geist_Mono)
 vi.mock('next/font/google', () => ({

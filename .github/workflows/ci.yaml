@@ -56,14 +56,17 @@ jobs:
           BRANCH=${GITHUB_REF_NAME}
           if [ "${BRANCH}" = "main" ]; then
             TAG="dkantares/dq-devops:prod-${SHORT_SHA}"
+            LATEST="dkantares/dq-devops:prod-latest"
           elif [ "${BRANCH}" = "dev" ]; then
             TAG="dkantares/dq-devops:dev-${SHORT_SHA}"
+            LATEST="dkantares/dq-devops:dev-latest"
           else
             echo "Unsupported branch ${BRANCH}"
             exit 1
           fi
           echo "short_sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
           echo "image_tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "latest_tag=${LATEST}" >> $GITHUB_OUTPUT
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -77,6 +80,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ steps.vars.outputs.image_tag }}
+          tags: | 
+            ${{ steps.vars.outputs.image_tag }}
+            ${{ steps.vars.outputs.latest_tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

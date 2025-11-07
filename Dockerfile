@@ -60,6 +60,8 @@ USER node
 COPY package.json .
 
 # Copy the production dependencies from the deps stage and also
+# copy static assets and any top-level config from the build stage.
+COPY --from=build /usr/src/app/public ./public
 # the built application from the build stage into the image.
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/.next ./.next

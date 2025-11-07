@@ -1,3 +1,5 @@
+[![CI Pipeline](https://github.com/MichaelGift/dq-devops-assignment/actions/workflows/ci.yaml/badge.svg)](https://github.com/MichaelGift/dq-devops-assignment/actions/workflows/ci.yaml)
+
 # DQ DevOps Assignment
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 

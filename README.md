@@ -3,39 +3,80 @@
 [![codecov](https://codecov.io/github/MichaelGift/dq-devops-assignment/graph/badge.svg?token=PL0RCB7SVX)](https://codecov.io/github/MichaelGift/dq-devops-assignment)
 
 # DQ DevOps Assignment
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This repository contains the solution for the DevOps assignment provided by DQ. The project is designed to demonstrate proficiency in DevOps practices, including CI/CD, infrastructure as code, and automated testing.
 
 ## Getting Started
+To get started with this project, follow the instructions below:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/MichaelGift/dq-devops-assignment.git
+   ```
+2. **Navigate to the project directory:**
+   ```bash
+   cd dq-devops-assignment
+   ```
+3. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+4. **Run the application:**
+   ```bash
+   npm start
+   ```
 
-First, run the development server:
+# Devops Implementation Details
 
+### Continuous Integration (CI):
+Automated build and test processes using GitHub Actions.
+
+The pipeline is defined in `.github/workflows/ci.yaml`.
+
+It tests then builds a Docker image and pushes it to Docker Hub on successful builds.
+
+Depending on the branch, it tags the image appropriately:
+- `main` branch: tagged as `prod-latest` and `prod-<commit-hash>`
+- `dev` branch: tagged as `dev-latest` and `dev-<commit-hash>`
+
+
+### Linting:
+Code quality checks using ESLint.
+The linting workflow is defined in `.github/workflows/lint.yaml`.
+
+
+### Code Coverage:
+Code coverage is measured using vitest.
+
+The coverage reports are uploaded to Codecov after each successful CI build.
+
+### Continuous Deployment (CD):
+The project is set up to use bash scripts for deployment automation.
+
+The deployment scripts can be found in the `scripts/` directory.
+
+They require a swarm cluster to deploy the Docker container as this simulates a production environment.
+
+The configuration is setup to rollback to the previous version in case of deployment failure.
+This ensures high availability of the application.
+
+To setup the swarm cluster, run:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+./scripts/deploy_swarm.sh
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> This requires Docker to be installed and initialized as a swarm manager. 
+> 
+> You can initialize a swarm by running `docker swarm init` on your local machine.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The deployment script is designed to be idempotent, ensuring that running them multiple times does not produce unintended side effects.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To deploy the application, run:
+```bash
+./scripts/cd.sh
+```
 
-## Learn More
+This will pull the latest Docker image from Docker Hub and deploy it to the swarm cluster.
 
-To learn more about Next.js, take a look at the following resources:
+### Monitoring and Logging:
+The swarm configuration includes basic health checks and performance constraints to ensure the application runs smoothly.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The logs are observable via ``docker service logs`` and live monitoring via ``docker stats``. 

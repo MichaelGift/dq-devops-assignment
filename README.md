@@ -80,3 +80,5 @@ This will pull the latest Docker image from Docker Hub and deploy it to the swar
 The swarm configuration includes basic health checks and performance constraints to ensure the application runs smoothly.
 
 The logs are observable via ``docker service logs`` and live monitoring via ``docker stats``. 
+
+Demo
